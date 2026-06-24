@@ -5,15 +5,16 @@ export default function History() {
   const [quotes, setQuotes] = useState([]);
   const [search, setSearch] = useState("");
 
-  const fetchQuotes = async () => {
+
+  useEffect(() => {
+    const fetchQuotes = async () => {
     const res = await fetch(
       `https://gem-drytech-offer-generator.onrender.com/api/offer/history?search=${search}`
     );
     const data = await res.json();
     setQuotes(data);
   };
-
-  useEffect(() => {
+    
     fetchQuotes();
   }, [search]);
 
