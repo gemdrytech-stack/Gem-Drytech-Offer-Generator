@@ -63,7 +63,7 @@ export default function Form({ setOfferData }) {
     ];
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/offer/meta")
+        fetch("https://gem-drytech-offer-generator.onrender.com/api/offer/meta")
             .then((res) => res.json())
             .then((data) => {
                 setMaterials(data.materials || []);
@@ -213,7 +213,7 @@ export default function Form({ setOfferData }) {
         };
 
         try {
-            const res = await fetch("http://localhost:5000/api/offer", {
+            const res = await fetch("https://gem-drytech-offer-generator.onrender.com/api/offer", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
