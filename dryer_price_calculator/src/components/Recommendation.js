@@ -114,7 +114,7 @@ export default function Recommendation({ data }) {
                 dryer: selectedDryer
             };
 
-            const res = await fetch("http://localhost:5000/api/offer/pdf", {
+            const res = await fetch("https://gem-drytech-offer-generator.onrender.com/api/offer/pdf", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

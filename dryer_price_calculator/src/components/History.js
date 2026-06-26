@@ -5,21 +5,22 @@ export default function History() {
   const [quotes, setQuotes] = useState([]);
   const [search, setSearch] = useState("");
 
-  const fetchQuotes = async () => {
+
+  useEffect(() => {
+    const fetchQuotes = async () => {
     const res = await fetch(
-      `http://localhost:5000/api/offer/history?search=${search}`
+      `https://gem-drytech-offer-generator.onrender.com/api/offer/history?search=${search}`
     );
     const data = await res.json();
     setQuotes(data);
   };
-
-  useEffect(() => {
+    
     fetchQuotes();
   }, [search]);
 
   const downloadPDF = async (quoteNo) => {
     const res = await fetch(
-      `http://localhost:5000/api/offer/pdf/${quoteNo}`
+      `https://gem-drytech-offer-generator.onrender.com/api/offer/pdf/${quoteNo}`
     );
 
     const blob = await res.blob();
