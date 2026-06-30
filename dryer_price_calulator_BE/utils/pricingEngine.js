@@ -118,30 +118,31 @@ function removeInvalidDryers(scores, data, reasons) {
   const isLiquidInput =
     materialText.includes("liquid") ||
     materialText.includes("slurry") ||
+    materialText.includes("molten") ||
     applicationText.includes("dairy") ||
     applicationText.includes("coating");
 
   if (isLiquidInput) {
     delete scores["Combination Dryer"];
-    reasons.push("Combination Dryer removed because input material is liquid/slurry.");
+    reasons.push("Combination Dryer removed because input material is liquid/slurry/molten.");
   }
 
-  const isStickyOrPaste =
+  const isStickyOrCake =
     materialText.includes("sludge") ||
     materialText.includes("paste") ||
     materialText.includes("cake");
 
-  if (isStickyOrPaste) {
+  if (isStickyOrCake) {
     delete scores["Vibrating Fluid Bed Dryer"];
+    reasons.push("Vibrating Fluid Bed Dryer removed because material is sticky or cake-type.");
   }
 
-  const isSolidOnly =
-    materialText.includes("granule") ||
-    materialText.includes("powder") ||
-    materialText.includes("piece") ||
-    materialText.includes("flake");
+  const isGrainMaterial =
+    materialText.includes("grain") ||
+    materialText.includes("seed") ||
+    applicationText.includes("grain");
 
-  if (!isSolidOnly && applicationText.includes("grain")) {
+  if (!isGrainMaterial) {
     delete scores["Grain Dryer"];
   }
 }
