@@ -13,49 +13,74 @@ export default function Recommendation({ data }) {
     }, [data]);
 
     const dryerInfo = {
-        "Continuous Band Dryer": {
-            desc: "Suitable for continuous hot-air drying of food, sludge, biomass, fibrous material, flakes, and pieces with controlled residence time.",
-            tags: ["Continuous", "Hot Air", "High Capacity"]
+        "Band Dryer / Roaster / Cooler": {
+            desc: "Suitable for desiccated coconut, granules, chips, cereals, grains, animal feed, snacks, pigments, fruits and vegetables.",
+            tags: ["Band Dryer", "Continuous", "Food/Agro"]
         },
-        "Combination Dryer": {
-            desc: "Suitable for non-liquid input materials where combined drying action is required for better moisture removal and uniform drying.",
-            tags: ["Non-Liquid Feed", "Custom", "Efficient Drying"]
+
+        "Mesh Belt Dryer": {
+            desc: "Suitable for desiccated coconut, nuts and seeds, carrageenan, pet foods, snacks, pharmaceuticals, chemicals and minerals.",
+            tags: ["Mesh Belt", "Modular", "Hot Air"]
         },
+
+        "Tunnel Oven": {
+            desc: "Suitable for bakery applications such as biscuits, snacks and bread.",
+            tags: ["Bakery", "Oven", "Continuous"]
+        },
+
+        "Flash Dryer": {
+            desc: "Suitable for fine powder, sawdust, filter cakes, starch, fibres, bagasse, pigments, dyes and phosphates.",
+            tags: ["Powder", "Flash Drying", "Short Retention"]
+        },
+
+        "Freeze Dryer": {
+            desc: "Suitable for vegetables, fruits, poultry, marine products, spices, herbs, pre-cooked meals, pet foods, dairy products, tea, coffee and pharmaceutical products.",
+            tags: ["Freeze Drying", "Heat Sensitive", "High Value"]
+        },
+
         "Paddle Dryer": {
-            desc: "Suitable for sludge, paste, filter cake, wet cake, and sticky materials requiring indirect heating and enclosed drying.",
-            tags: ["Sticky Material", "Indirect Heating", "Sludge/Cake"]
+            desc: "Suitable for waste sludge, wet cakes, wet powders, agro waste, municipal solid waste, pastes, crystalline solids and magnesium carbonate.",
+            tags: ["Sludge", "Paste", "Indirect Heating"]
         },
+
+        "Double Drum Dryer": {
+            desc: "Suitable for molten liquid or pasty feeds, slurry, solution, organic and inorganic materials, milk products, fruit concentrates and industrial wastewater slurry.",
+            tags: ["Slurry", "Pasty Feed", "Drum Drying"]
+        },
+
+        "Single Drum Flaker / Dryer": {
+            desc: "Suitable for molten chemicals such as caustic soda, chlorinated wax, fatty acids, phenolic resin, organic resins and sodium sulphide.",
+            tags: ["Flaker", "Molten Feed", "Chemical"]
+        },
+
         "Rotary Dryer": {
-            desc: "Suitable for minerals, biomass, fertilizer, and bulk solids requiring rugged high-throughput drying.",
-            tags: ["Bulk Solids", "Rugged", "High Throughput"]
+            desc: "Suitable for chemical fertilizers, clay, sands, limestone, waste sludge, food products, plastics, silica sands, ores, coal and filter cake.",
+            tags: ["Rotary", "Bulk Solids", "Minerals"]
         },
-        "Fluid Bed Dryer": {
-            desc: "Suitable for powders, granules, grains, and free-flowing material requiring uniform air distribution.",
-            tags: ["Powder", "Granules", "Uniform Drying"]
+
+        "Vibrating Fluid Bed Dryer": {
+            desc: "Suitable for citric acid, ammonium sulphate, beans, pharmaceuticals, monosodium glutamate, sugar, foodstuff, borax, seed, chemical and grain.",
+            tags: ["Fluid Bed", "Granules", "Uniform Drying"]
         },
+
         "Tray Dryer": {
-            desc: "Suitable for small batch drying, herbs, food products, and low-capacity applications.",
-            tags: ["Batch", "Simple", "Low Capacity"]
+            desc: "Suitable for chilies, spices, papads, potato chips, onion, fish, garlic, grapes, cashew nuts, confectionery, pharmaceuticals, chemicals, powders and granules.",
+            tags: ["Tray Dryer", "Batch", "Compact"]
         },
-        "Vacuum Dryer": {
-            desc: "Suitable for heat-sensitive and pharma materials requiring low-temperature drying under vacuum.",
-            tags: ["Vacuum", "Pharma", "Heat Sensitive"]
+
+        "DDGS Dryer": {
+            desc: "Suitable for distillery and ethanol plants, wet distillers grains, brewer spent grains, agro by-products and feed ingredient drying.",
+            tags: ["DDGS", "Distillery", "Animal Feed"]
         },
-        "Spray Dryer": {
-            desc: "Suitable for liquid or slurry feed such as dairy, ceramic slurry, and solution-based products.",
-            tags: ["Liquid Feed", "Slurry", "Powder Output"]
+
+        "Grain Dryer": {
+            desc: "Suitable for maize, chickpeas, paddy, coffee beans, soybean, wheat, rye, barley, rice and pulses.",
+            tags: ["Grain", "Paddy", "Bulk Drying"]
         },
-        "Freeze Dryer (Lyophilizer)": {
-            desc: "Suitable for high-value heat-sensitive products requiring maximum product preservation.",
-            tags: ["Heat Sensitive", "High Value", "Low Temperature"]
-        },
-        "Spin Flash Dryer": {
-            desc: "Suitable for certain chemical cakes, pastes, and powders requiring fast drying with disintegration.",
-            tags: ["Chemical", "Fast Drying", "Powder"]
-        },
-        "Drum Dryer": {
-            desc: "Suitable for slurry, paste, and liquid feed that can be dried on heated drum surfaces.",
-            tags: ["Slurry", "Paste", "Surface Drying"]
+
+        "Combination Dryer": {
+            desc: "Suitable for non-liquid input materials requiring combined drying action for better moisture removal and uniform drying.",
+            tags: ["Non-Liquid", "Custom", "GEM Design"]
         }
     };
 

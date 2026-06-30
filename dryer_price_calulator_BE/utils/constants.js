@@ -70,438 +70,180 @@ const FREQUENCY = [
   "60 Hz"
 ];
 
+const DRYER_TYPES = [
+  "Band Dryer / Roaster / Cooler",
+  "Mesh Belt Dryer",
+  "Tunnel Oven",
+  "Flash Dryer",
+  "Freeze Dryer",
+  "Paddle Dryer",
+  "Double Drum Dryer",
+  "Single Drum Flaker / Dryer",
+  "Rotary Dryer",
+  "Vibrating Fluid Bed Dryer",
+  "Tray Dryer",
+  "DDGS Dryer",
+  "Grain Dryer",
+  "Combination Dryer"
+];
+
 const BASE_PRICE = {
-  "Continuous Band Dryer": 450000,
-  "Combination Dryer": 500000,
+  "Band Dryer / Roaster / Cooler": 450000,
+  "Mesh Belt Dryer": 420000,
+  "Tunnel Oven": 300000,
+  "Flash Dryer": 650000,
+  "Freeze Dryer": 1200000,
   "Paddle Dryer": 550000,
+  "Double Drum Dryer": 500000,
+  "Single Drum Flaker / Dryer": 480000,
   "Rotary Dryer": 400000,
-  "Fluid Bed Dryer": 420000,
+  "Vibrating Fluid Bed Dryer": 420000,
   "Tray Dryer": 180000,
-  "Vacuum Dryer": 600000,
-  "Spray Dryer": 750000,
-  "Freeze Dryer (Lyophilizer)": 1200000,
-  "Spin Flash Dryer": 650000,
-  "Drum Dryer": 500000
+  "DDGS Dryer": 900000,
+  "Grain Dryer": 350000,
+  "Combination Dryer": 500000
 };
 
 const DRYER_RULES = {
-  defaultDryer: "Continuous Band Dryer",
+  defaultDryer: "Band Dryer / Roaster / Cooler",
 
   priority: [
-    "Continuous Band Dryer",
+    "Band Dryer / Roaster / Cooler",
+    "Mesh Belt Dryer",
     "Combination Dryer",
     "Paddle Dryer",
     "Rotary Dryer",
-    "Fluid Bed Dryer",
+    "Vibrating Fluid Bed Dryer",
+    "Flash Dryer",
     "Tray Dryer",
-    "Vacuum Dryer",
-    "Spray Dryer",
-    "Freeze Dryer (Lyophilizer)",
-    "Spin Flash Dryer",
-    "Drum Dryer"
+    "Freeze Dryer",
+    "Double Drum Dryer",
+    "Single Drum Flaker / Dryer",
+    "Tunnel Oven",
+    "DDGS Dryer",
+    "Grain Dryer"
   ],
 
   applications: {
-    "Heat-Sensitive Specialty": {
+    "Food": {
       scores: {
-        "Freeze Dryer (Lyophilizer)": 10,
-        "Vacuum Dryer": 8,
-        "Continuous Band Dryer": 5,
-        "Tray Dryer": 4,
-        "Rotary Dryer": -5
-      },
-      reason: "Heat-sensitive material needs low-temperature or vacuum-based drying."
-    },
-
-    Biotech: {
-      scores: {
-        "Freeze Dryer (Lyophilizer)": 10,
-        "Vacuum Dryer": 8,
-        "Tray Dryer": 3
-      },
-      reason: "Biotech materials generally require controlled low-temperature drying."
-    },
-
-    Pharma: {
-      scores: {
-        "Vacuum Dryer": 10,
+        "Band Dryer / Roaster / Cooler": 9,
+        "Mesh Belt Dryer": 8,
         "Tray Dryer": 6,
-        "Fluid Bed Dryer": 5,
-        "Paddle Dryer": 4
+        "Freeze Dryer": 4
       },
-      reason: "Pharma materials usually need controlled hygienic drying."
+      reason: "Food products require hygienic and uniform drying."
     },
 
-    Dairy: {
+    "Vegetables / Fruits": {
       scores: {
-        "Spray Dryer": 10,
-        "Drum Dryer": 6,
-        "Fluid Bed Dryer": 4,
-        "Combination Dryer": -15
+        "Band Dryer / Roaster / Cooler": 9,
+        "Mesh Belt Dryer": 8,
+        "Freeze Dryer": 7,
+        "Tray Dryer": 5
       },
-      reason: "Dairy liquid/slurry products are commonly dried through spray or drum drying."
+      reason: "Vegetables and fruits require controlled drying with product quality retention."
     },
 
-    Food: {
-      scores: {
-        "Continuous Band Dryer": 9,
-        "Tray Dryer": 6,
-        "Fluid Bed Dryer": 5,
-        "Freeze Dryer (Lyophilizer)": 4
-      },
-      reason: "Food products generally require hygienic and uniform drying."
-    },
-
-    Bakery: {
-      scores: {
-        "Continuous Band Dryer": 8,
-        "Tray Dryer": 7,
-        "Fluid Bed Dryer": 4
-      },
-      reason: "Bakery products usually need gentle hot-air drying."
-    },
-
-    Chemical: {
+    "Chemical": {
       scores: {
         "Paddle Dryer": 8,
         "Rotary Dryer": 7,
-        "Spin Flash Dryer": 6,
-        "Fluid Bed Dryer": 5,
-        "Continuous Band Dryer": 4,
-        "Combination Dryer": 4
+        "Flash Dryer": 7,
+        "Vibrating Fluid Bed Dryer": 6,
+        "Double Drum Dryer": 5,
+        "Single Drum Flaker / Dryer": 5,
+        "Band Dryer / Roaster / Cooler": 4
       },
-      reason: "Chemical drying depends on cake, powder, paste, or slurry nature."
-    },
-
-    Minerals: {
-      scores: {
-        "Rotary Dryer": 10,
-        "Fluid Bed Dryer": 6,
-        "Paddle Dryer": 4
-      },
-      reason: "Minerals are usually rugged, high-capacity drying applications."
-    },
-
-    Fertilizer: {
-      scores: {
-        "Rotary Dryer": 9,
-        "Fluid Bed Dryer": 6,
-        "Continuous Band Dryer": 5
-      },
-      reason: "Fertilizer drying generally needs continuous bulk drying."
-    },
-
-    "Grain (Paddy/Wheat/Maize)": {
-      scores: {
-        "Fluid Bed Dryer": 9,
-        "Continuous Band Dryer": 5,
-        "Tray Dryer": 3
-      },
-      reason: "Grains require uniform air distribution and continuous drying."
-    },
-
-    "Biomass / Wood": {
-      scores: {
-        "Rotary Dryer": 9,
-        "Continuous Band Dryer": 8,
-        "Combination Dryer": 7,
-        "Fluid Bed Dryer": 4
-      },
-      reason: "Biomass and wood generally need high-throughput moisture removal."
+      reason: "Chemical drying depends on whether the material is cake, powder, paste, slurry, molten or crystalline."
     },
 
     "Sludge / Wastewater": {
       scores: {
         "Paddle Dryer": 10,
-        "Continuous Band Dryer": 8,
-        "Combination Dryer": 8,
-        "Rotary Dryer": 3,
-        "Fluid Bed Dryer": -6,
-        "Spray Dryer": -10
-      },
-      reason: "Sludge requires handling of sticky, high-moisture, non-free-flowing material."
-    },
-
-    "Vegetables / Fruits": {
-      scores: {
-        "Continuous Band Dryer": 9,
-        "Tray Dryer": 6,
-        "Freeze Dryer (Lyophilizer)": 6,
-        "Fluid Bed Dryer": 3
-      },
-      reason: "Vegetables and fruits need controlled drying with product quality retention."
-    },
-
-    "Tea / Herbs": {
-      scores: {
-        "Tray Dryer": 8,
-        "Continuous Band Dryer": 8,
-        "Fluid Bed Dryer": 4,
-        "Rotary Dryer": -4
-      },
-      reason: "Tea and herbs need gentle drying to preserve aroma and quality."
-    },
-
-    "Pet Food / Snacks": {
-      scores: {
-        "Fluid Bed Dryer": 8,
-        "Continuous Band Dryer": 7,
-        "Tray Dryer": 4
-      },
-      reason: "Pet food and snacks usually require uniform drying and cooling."
-    },
-
-    "Ceramics / Coating": {
-      scores: {
-        "Spray Dryer": 9,
-        "Fluid Bed Dryer": 5,
-        "Tray Dryer": 3,
-        "Combination Dryer": -15
-      },
-      reason: "Ceramic slurry and coating applications often require spray drying."
-    }
-  },
-
-  materials: {
-    Sludge: {
-      "Paddle Dryer": 10,
-      "Continuous Band Dryer": 8,
-      "Combination Dryer": 8,
-      "Rotary Dryer": 3,
-      "Fluid Bed Dryer": -6,
-      "Spray Dryer": -10
-    },
-
-    Paste: {
-      "Paddle Dryer": 9,
-      "Combination Dryer": 8,
-      "Continuous Band Dryer": 5,
-      "Spin Flash Dryer": 4,
-      "Fluid Bed Dryer": -5,
-      "Spray Dryer": -8
-    },
-
-    "Filter Cake": {
-      "Paddle Dryer": 9,
-      "Combination Dryer": 8,
-      "Continuous Band Dryer": 7,
-      "Rotary Dryer": 4,
-      "Fluid Bed Dryer": -4
-    },
-
-    "Wet Cake": {
-      "Paddle Dryer": 9,
-      "Combination Dryer": 8,
-      "Continuous Band Dryer": 7,
-      "Rotary Dryer": 4
-    },
-
-    Fibrous: {
-      "Combination Dryer": 9,
-      "Continuous Band Dryer": 8,
-      "Rotary Dryer": 7,
-      "Fluid Bed Dryer": 3
-    },
-
-    Powder: {
-      "Fluid Bed Dryer": 8,
-      "Spin Flash Dryer": 7,
-      "Spray Dryer": 5,
-      "Rotary Dryer": 4,
-      "Combination Dryer": -3
-    },
-
-    Granules: {
-      "Fluid Bed Dryer": 9,
-      "Rotary Dryer": 6,
-      "Continuous Band Dryer": 5,
-      "Combination Dryer": 3
-    },
-
-    Pieces: {
-      "Continuous Band Dryer": 9,
-      "Tray Dryer": 5,
-      "Fluid Bed Dryer": 4,
-      "Combination Dryer": 4
-    },
-
-    Flakes: {
-      "Continuous Band Dryer": 8,
-      "Tray Dryer": 5,
-      "Fluid Bed Dryer": 4,
-      "Combination Dryer": 4
-    },
-
-    Slurry: {
-      "Spray Dryer": 9,
-      "Drum Dryer": 8,
-      "Paddle Dryer": 4,
-      "Combination Dryer": -15,
-      "Tray Dryer": -4
-    },
-
-    Liquid: {
-      "Spray Dryer": 10,
-      "Drum Dryer": 8,
-      "Freeze Dryer (Lyophilizer)": 5,
-      "Combination Dryer": -15,
-      "Rotary Dryer": -8,
-      "Fluid Bed Dryer": -8
-    }
-  },
-
-  capacityRules: [
-    {
-      maxEvap: 50,
-      scores: {
-        "Tray Dryer": 8,
-        "Vacuum Dryer": 5,
-        "Continuous Band Dryer": 2
-      },
-      reason: "Low evaporation load can be handled by small or batch drying systems."
-    },
-    {
-      minEvap: 50,
-      maxEvap: 300,
-      scores: {
-        "Continuous Band Dryer": 6,
-        "Paddle Dryer": 6,
-        "Combination Dryer": 5,
-        "Tray Dryer": 5,
-        "Fluid Bed Dryer": 4
-      },
-      reason: "Medium-low evaporation load allows compact continuous or batch drying."
-    },
-    {
-      minEvap: 300,
-      maxEvap: 1000,
-      scores: {
-        "Continuous Band Dryer": 8,
-        "Paddle Dryer": 7,
+        "Rotary Dryer": 6,
+        "Band Dryer / Roaster / Cooler": 6,
         "Combination Dryer": 7,
-        "Rotary Dryer": 7,
-        "Fluid Bed Dryer": 6
+        "Double Drum Dryer": 4,
+        "Vibrating Fluid Bed Dryer": -6
       },
-      reason: "Medium evaporation load is suitable for continuous drying systems."
+      reason: "Sludge and wastewater solids require sticky, high-moisture material handling."
     },
-    {
-      minEvap: 1000,
-      maxEvap: 3000,
+
+    "Biomass / Wood": {
       scores: {
-        "Continuous Band Dryer": 9,
         "Rotary Dryer": 9,
-        "Combination Dryer": 8,
-        "Paddle Dryer": 6
+        "Band Dryer / Roaster / Cooler": 8,
+        "Flash Dryer": 7,
+        "Combination Dryer": 7
       },
-      reason: "High evaporation load needs continuous high-capacity drying equipment."
+      reason: "Biomass and wood need high-throughput moisture removal."
     },
-    {
-      minEvap: 3000,
+
+    "Minerals": {
       scores: {
         "Rotary Dryer": 10,
-        "Continuous Band Dryer": 9,
-        "Combination Dryer": 8,
-        "Paddle Dryer": 6
+        "Vibrating Fluid Bed Dryer": 6,
+        "Paddle Dryer": 4
       },
-      reason: "Very high evaporation load may need large or multiple drying systems."
-    }
-  ],
+      reason: "Minerals are rugged high-capacity drying applications."
+    },
 
-  temperatureRules: [
-    {
-      maxTemp: 70,
+    "Fertilizer": {
       scores: {
-        "Freeze Dryer (Lyophilizer)": 5,
-        "Vacuum Dryer": 5,
-        "Continuous Band Dryer": 4,
-        "Tray Dryer": 3,
-        "Rotary Dryer": -4
+        "Rotary Dryer": 9,
+        "Vibrating Fluid Bed Dryer": 7,
+        "DDGS Dryer": 5,
+        "Band Dryer / Roaster / Cooler": 4
       },
-      reason: "Low-temperature drying indicates heat-sensitive product."
+      reason: "Fertilizer drying generally requires continuous bulk drying."
     },
-    {
-      minTemp: 70,
-      maxTemp: 150,
+
+    "Grain (Paddy/Wheat/Maize)": {
       scores: {
-        "Continuous Band Dryer": 5,
-        "Combination Dryer": 4,
-        "Fluid Bed Dryer": 4,
-        "Tray Dryer": 3,
-        "Paddle Dryer": 3
+        "Grain Dryer": 10,
+        "Vibrating Fluid Bed Dryer": 7,
+        "Band Dryer / Roaster / Cooler": 4
       },
-      reason: "Medium-temperature drying is suitable for hot-air drying systems."
+      reason: "Grains require uniform air flow and controlled residence time."
     },
-    {
-      minTemp: 150,
+
+    "Bakery": {
       scores: {
-        "Rotary Dryer": 5,
-        "Paddle Dryer": 4,
-        "Combination Dryer": 4,
-        "Fluid Bed Dryer": 3,
-        "Tray Dryer": -2
+        "Tunnel Oven": 10,
+        "Band Dryer / Roaster / Cooler": 7,
+        "Tray Dryer": 5
       },
-      reason: "High-temperature duty is better suited for rugged thermal dryers."
-    }
-  ],
-
-  heatingMediaRules: {
-    steam: {
-      "Continuous Band Dryer": 4,
-      "Paddle Dryer": 4,
-      "Combination Dryer": 4,
-      "Tray Dryer": 3,
-      "Fluid Bed Dryer": 3
+      reason: "Bakery products such as biscuits, snacks and bread are suitable for tunnel oven systems."
     },
 
-    electric: {
-      "Tray Dryer": 5,
-      "Vacuum Dryer": 4,
-      "Freeze Dryer (Lyophilizer)": 3,
-      "Continuous Band Dryer": 2
+    "Dairy": {
+      scores: {
+        "Double Drum Dryer": 8,
+        "Freeze Dryer": 6,
+        "Tray Dryer": 3
+      },
+      reason: "Dairy applications may require drum drying or freeze drying depending on product form."
     },
 
-    gas: {
-      "Rotary Dryer": 5,
-      "Continuous Band Dryer": 4,
-      "Combination Dryer": 4,
-      "Fluid Bed Dryer": 3
+    "Pharma": {
+      scores: {
+        "Freeze Dryer": 9,
+        "Tray Dryer": 6,
+        "Vibrating Fluid Bed Dryer": 5,
+        "Flash Dryer": 4
+      },
+      reason: "Pharma materials require controlled hygienic drying."
     },
 
-    diesel: {
-      "Rotary Dryer": 4,
-      "Continuous Band Dryer": 4,
-      "Combination Dryer": 4
-    },
-
-    thermic: {
-      "Paddle Dryer": 5,
-      "Rotary Dryer": 4,
-      "Combination Dryer": 4,
-      "Continuous Band Dryer": 3
-    },
-
-    "flue gas": {
-      "Rotary Dryer": 6,
-      "Continuous Band Dryer": 4,
-      "Combination Dryer": 4
-    },
-
-    wood: {
-      "Rotary Dryer": 5,
-      "Continuous Band Dryer": 4,
-      "Combination Dryer": 4
-    },
-
-    biomass: {
-      "Rotary Dryer": 5,
-      "Continuous Band Dryer": 4,
-      "Combination Dryer": 4
-    },
-
-    coal: {
-      "Rotary Dryer": 5,
-      "Continuous Band Dryer": 3,
-      "Combination Dryer": 3
+    "Heat-Sensitive Specialty": {
+      scores: {
+        "Freeze Dryer": 10,
+        "Tray Dryer": 5,
+        "Band Dryer / Roaster / Cooler": 4,
+        "Rotary Dryer": -5
+      },
+      reason: "Heat-sensitive materials require low-temperature controlled drying."
     }
   }
 };
@@ -514,5 +256,6 @@ module.exports = {
   COUNTRY,
   FREQUENCY,
   BASE_PRICE,
-  DRYER_RULES
+  DRYER_RULES,
+  DRYER_TYPES,
 };

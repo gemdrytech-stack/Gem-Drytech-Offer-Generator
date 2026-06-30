@@ -18,7 +18,82 @@ const { saveQuote, getAllQuotes } = require("./quoteStore");
   Change these filenames as per your actual files.
 */
 const logoPath = path.join(__dirname, "../assets/hderlgo.png");
-const defaultDryerImagePath = path.join(__dirname, "../assets/dryer-offer.jpg");
+const defaultDryerImagePath = path.join(
+  __dirname,
+  "../assets/dryers/default-dryer.jpg"
+);
+
+const DRYER_IMAGE_MAP = {
+  "Band Dryer / Roaster / Cooler": path.join(
+    __dirname,
+    "../assets/dryers/band-dryer.png"
+  ),
+
+  "Mesh Belt Dryer": path.join(
+    __dirname,
+    "../assets/dryers/mesh-belt-dryer.png"
+  ),
+
+  "Tunnel Oven": path.join(
+    __dirname,
+    "../assets/dryers/tunnel-oven.png"
+  ),
+
+  "Flash Dryer": path.join(
+    __dirname,
+    "../assets/dryers/flash.png"
+  ),
+
+  "Freeze Dryer": path.join(
+    __dirname,
+    "../assets/dryers/freeze.png"
+  ),
+
+  "Paddle Dryer": path.join(
+    __dirname,
+    "../assets/dryers/paddle.png"
+  ),
+
+  "Double Drum Dryer": path.join(
+    __dirname,
+    "../assets/dryers/double-drum.png"
+  ),
+
+  "Single Drum Flaker / Dryer": path.join(
+    __dirname,
+    "../assets/dryers/single-drum.png"
+  ),
+
+  "Rotary Dryer": path.join(
+    __dirname,
+    "../assets/dryers/rotary.png"
+  ),
+
+  "Vibrating Fluid Bed Dryer": path.join(
+    __dirname,
+    "../assets/dryers/vibrating-fluid-bed.png"
+  ),
+
+  "Tray Dryer": path.join(
+    __dirname,
+    "../assets/dryers/tray.png"
+  ),
+
+  "DDGS Dryer": path.join(
+    __dirname,
+    "../assets/dryers/ddgs.png"
+  ),
+
+  "Grain Dryer": path.join(
+    __dirname,
+    "../assets/dryers/grain.png"
+  ),
+
+  "Combination Dryer": path.join(
+    __dirname,
+    "../assets/dryers/dryer-offer.jpg"
+  )
+};
 
 function generatePDF(data, res) {
   let sourceData = data;
@@ -116,13 +191,29 @@ function generatePDF(data, res) {
     return imagePath && fs.existsSync(imagePath);
   }
 
+  function getDryerImagePath(dryerName) {
+    const selectedDryer = String(dryerName || "").trim();
+
+    const mappedPath = DRYER_IMAGE_MAP[selectedDryer];
+
+    if (mappedPath && imageExists(mappedPath)) {
+      return mappedPath;
+    }
+
+    if (imageExists(defaultDryerImagePath)) {
+      return defaultDryerImagePath;
+    }
+
+    return null;
+  }
+
   function drawOuterBorder() {
     doc.lineWidth(0.7);
     rect(left, 38, tableWidth, pageHeight - 78);
   }
 
   function getOfferTitle() {
-    console.log("=========",sourceData)
+    console.log("=========", sourceData)
     const dryer = safe(sourceData.dryer, "DRYER");
     return `TECHNICAL OFFER FOR ${String(dryer).toUpperCase()}`;
   }
@@ -178,8 +269,8 @@ function generatePDF(data, res) {
   function estimateDimensions() {
     const evaporation = toNumber(
       sourceData.waterEvaporation ||
-        sourceData.evaporation ||
-        sourceData.evaporationCapacity
+      sourceData.evaporation ||
+      sourceData.evaporationCapacity
     );
 
     if (!evaporation) {
@@ -283,163 +374,163 @@ function generatePDF(data, res) {
     doc.y = y + h;
   }
 
-function drawClientAndTermsBlock() {
-  const y = 93;
-  const clientH = 65;
-  const termsH = 125; // increased height
-  const rightColX = left + 300;
-  const leftColW = 300;
-  const rightColW = tableWidth - leftColW;
+  function drawClientAndTermsBlock() {
+    const y = 93;
+    const clientH = 65;
+    const termsH = 125; // increased height
+    const rightColX = left + 300;
+    const leftColW = 300;
+    const rightColW = tableWidth - leftColW;
 
-  // Client and company box
-  rect(left, y, tableWidth, clientH);
-  line(rightColX, y, rightColX, y + clientH);
+    // Client and company box
+    rect(left, y, tableWidth, clientH);
+    line(rightColX, y, rightColX, y + clientH);
 
-  normal(7).text(
-    `To,\n${safe(sourceData.client, "Client Name")}\n${safe(
-      sourceData.companyAddress,
-      "Company Address"
-    )}\nEmail: ${safe(sourceData.email)}\nTel: ${safe(sourceData.phone)}`,
-    left + 5,
-    y + 5,
-    {
-      width: leftColW - 10,
-      lineGap: 1.5
-    }
-  );
+    normal(7).text(
+      `To,\n${safe(sourceData.client, "Client Name")}\n${safe(
+        sourceData.companyAddress,
+        "Company Address"
+      )}\nEmail: ${safe(sourceData.email)}\nTel: ${safe(sourceData.phone)}`,
+      left + 5,
+      y + 5,
+      {
+        width: leftColW - 10,
+        lineGap: 1.5
+      }
+    );
 
-  bold(7).text("GEM DRYTECH SYSTEMS LLP", rightColX + 5, y + 5, {
-    width: rightColW - 10
-  });
-
-  normal(6.8).text(
-    "10/C, MIDDLETON ROW, 3RD FLOOR, CALCUTTA-700071, INDIA\nPHONE: (91-33) 2217-7328\nFAX: (91-33) 2217-7333\nE-MAIL: sales@gemdryers.com / sg@gemdryers.com",
-    rightColX + 5,
-    y + 18,
-    {
-      width: rightColW - 10,
-      lineGap: 1.2
-    }
-  );
-
-  const y2 = y + clientH;
-
-  rect(left, y2, tableWidth, termsH);
-  line(rightColX, y2, rightColX, y2 + termsH);
-
-  // Left side
-  const paymentH = 38;
-  line(left, y2 + paymentH, rightColX, y2 + paymentH);
-
-  bold(7).text("TERMS OF PAYMENT:", left + 5, y2 + 5, {
-    width: leftColW - 10
-  });
-
-  normal(6.5).text(
-    safe(
-      sourceData.paymentTerms,
-      "40% advance along with techno-commercial clear purchase order\n60% plus G.S.T. prevailing at the time of supply against pro-forma invoice before dispatch."
-    ),
-    left + 5,
-    y2 + 16,
-    {
-      width: leftColW - 10,
-      lineGap: 1
-    }
-  );
-
-  bold(7).text("OUR BANKER:", left + 5, y2 + paymentH + 5, {
-    width: leftColW - 10
-  });
-
-  normal(6.4).text(
-    "STANDARD CHARTERED BANK\n21A, SHAKESPEARE SARANI\nKOLKATA - 700017\nACCOUNT NAME : GEM DRYTECH SYSTEMS LLP\nINR ACCOUNT NUMBER: 33705900241\nBRANCH CODE: 337\nIFSC CODE: SCBL0036014\nSWIFT CODE: SCBLINBBXXX\nAD CODE: 64700661000009",
-    left + 5,
-    y2 + paymentH + 16,
-    {
-      width: leftColW - 10,
-      lineGap: 0.5
-    }
-  );
-
-  // Right side row heights
-  const enquiryH = 30;
-  const validityH = 35;
-  const despatchH = 35;
-  const packingH = termsH - enquiryH - validityH - despatchH;
-
-  const enquiryY = y2;
-  const validityY = enquiryY + enquiryH;
-  const despatchY = validityY + validityH;
-  const packingY = despatchY + despatchH;
-
-  line(rightColX, validityY, right, validityY);
-  line(rightColX, despatchY, right, despatchY);
-  line(rightColX, packingY, right, packingY);
-
-  bold(7).text("YOUR ENQUIRY NO.", rightColX + 5, enquiryY + 5, {
-    width: rightColW - 10
-  });
-
-  normal(6.5).text(
-    `DATED: ${safe(sourceData.enquiryDate, sourceData.date || "-")}`,
-    rightColX + 5,
-    enquiryY + 16,
-    {
+    bold(7).text("GEM DRYTECH SYSTEMS LLP", rightColX + 5, y + 5, {
       width: rightColW - 10
-    }
-  );
+    });
 
-  bold(7).text("VALIDITY:", rightColX + 5, validityY + 5, {
-    width: rightColW - 10
-  });
+    normal(6.8).text(
+      "10/C, MIDDLETON ROW, 3RD FLOOR, CALCUTTA-700071, INDIA\nPHONE: (91-33) 2217-7328\nFAX: (91-33) 2217-7333\nE-MAIL: sales@gemdryers.com / sg@gemdryers.com",
+      rightColX + 5,
+      y + 18,
+      {
+        width: rightColW - 10,
+        lineGap: 1.2
+      }
+    );
 
-  normal(6.4).text(
-    safe(
-      sourceData.validity,
-      "Our offer is valid for 30 Days from date and subject to reconfirmation thereafter."
-    ),
-    rightColX + 5,
-    validityY + 16,
-    {
-      width: rightColW - 10,
-      lineGap: 0.7
-    }
-  );
+    const y2 = y + clientH;
 
-  bold(7).text("DESPATCH:", rightColX + 5, despatchY + 5, {
-    width: rightColW - 10
-  });
+    rect(left, y2, tableWidth, termsH);
+    line(rightColX, y2, rightColX, y2 + termsH);
 
-  normal(6.3).text(
-    safe(
-      sourceData.despatch,
-      "Within 14-18 weeks of receipt of your order confirmation and advance payment."
-    ),
-    rightColX + 5,
-    despatchY + 16,
-    {
-      width: rightColW - 10,
-      lineGap: 0.5
-    }
-  );
+    // Left side
+    const paymentH = 38;
+    line(left, y2 + paymentH, rightColX, y2 + paymentH);
 
-  bold(7).text("PACKING & MARKS:", rightColX + 5, packingY + 4, {
-    width: rightColW - 10
-  });
+    bold(7).text("TERMS OF PAYMENT:", left + 5, y2 + 5, {
+      width: leftColW - 10
+    });
 
-  normal(6.2).text(
-    "Goods will be securely packed and suitably marked.",
-    rightColX + 5,
-    packingY + 15,
-    {
+    normal(6.5).text(
+      safe(
+        sourceData.paymentTerms,
+        "40% advance along with techno-commercial clear purchase order\n60% plus G.S.T. prevailing at the time of supply against pro-forma invoice before dispatch."
+      ),
+      left + 5,
+      y2 + 16,
+      {
+        width: leftColW - 10,
+        lineGap: 1
+      }
+    );
+
+    bold(7).text("OUR BANKER:", left + 5, y2 + paymentH + 5, {
+      width: leftColW - 10
+    });
+
+    normal(6.4).text(
+      "STANDARD CHARTERED BANK\n21A, SHAKESPEARE SARANI\nKOLKATA - 700017\nACCOUNT NAME : GEM DRYTECH SYSTEMS LLP\nINR ACCOUNT NUMBER: 33705900241\nBRANCH CODE: 337\nIFSC CODE: SCBL0036014\nSWIFT CODE: SCBLINBBXXX\nAD CODE: 64700661000009",
+      left + 5,
+      y2 + paymentH + 16,
+      {
+        width: leftColW - 10,
+        lineGap: 0.5
+      }
+    );
+
+    // Right side row heights
+    const enquiryH = 30;
+    const validityH = 35;
+    const despatchH = 35;
+    const packingH = termsH - enquiryH - validityH - despatchH;
+
+    const enquiryY = y2;
+    const validityY = enquiryY + enquiryH;
+    const despatchY = validityY + validityH;
+    const packingY = despatchY + despatchH;
+
+    line(rightColX, validityY, right, validityY);
+    line(rightColX, despatchY, right, despatchY);
+    line(rightColX, packingY, right, packingY);
+
+    bold(7).text("YOUR ENQUIRY NO.", rightColX + 5, enquiryY + 5, {
       width: rightColW - 10
-    }
-  );
+    });
 
-  // Extra spacing before description table
-  doc.y = y2 + termsH + 5;
-}
+    normal(6.5).text(
+      `DATED: ${safe(sourceData.enquiryDate, sourceData.date || "-")}`,
+      rightColX + 5,
+      enquiryY + 16,
+      {
+        width: rightColW - 10
+      }
+    );
+
+    bold(7).text("VALIDITY:", rightColX + 5, validityY + 5, {
+      width: rightColW - 10
+    });
+
+    normal(6.4).text(
+      safe(
+        sourceData.validity,
+        "Our offer is valid for 30 Days from date and subject to reconfirmation thereafter."
+      ),
+      rightColX + 5,
+      validityY + 16,
+      {
+        width: rightColW - 10,
+        lineGap: 0.7
+      }
+    );
+
+    bold(7).text("DESPATCH:", rightColX + 5, despatchY + 5, {
+      width: rightColW - 10
+    });
+
+    normal(6.3).text(
+      safe(
+        sourceData.despatch,
+        "Within 14-18 weeks of receipt of your order confirmation and advance payment."
+      ),
+      rightColX + 5,
+      despatchY + 16,
+      {
+        width: rightColW - 10,
+        lineGap: 0.5
+      }
+    );
+
+    bold(7).text("PACKING & MARKS:", rightColX + 5, packingY + 4, {
+      width: rightColW - 10
+    });
+
+    normal(6.2).text(
+      "Goods will be securely packed and suitably marked.",
+      rightColX + 5,
+      packingY + 15,
+      {
+        width: rightColW - 10
+      }
+    );
+
+    // Extra spacing before description table
+    doc.y = y2 + termsH + 5;
+  }
 
   /* =========================
      OFFER TABLE
@@ -625,168 +716,168 @@ function drawClientAndTermsBlock() {
   }
 
   function isEnabled(value) {
-  return value === true || value === "true" || value === "Yes" || value === "yes";
-}
-
-function getPageOneScopeSections() {
-  const sections = [];
-
-  if (isEnabled(sourceData.feedingEnabled)) {
-    sections.push({
-      title: "Feeding",
-      lines: [
-        `Feed conveyor ${safe(sourceData.feedConveyorWidth, "600")} mm wide, ${safe(sourceData.feedLength, "4500")} mm long`,
-        `Material of construction ${safe(sourceData.feedMoc, sourceData.moc || "MS / SS304")}`,
-        `Gear motor ${safe(sourceData.feedMotor, "7.5 HP")}`
-      ]
-    });
+    return value === true || value === "true" || value === "Yes" || value === "yes";
   }
 
-  sections.push({
-    title: "Dryer",
-    lines: [
-      `${safe(sourceData.dryer, "Dryer")} suitable for continuous drying application`,
-      `Material of construction ${safe(sourceData.dryerMoc, sourceData.moc || "As per offer")}`,
-      `Drive arrangement with suitable geared motor`,
-      `Motor make ${safe(sourceData.motorMake, "ABB / Siemens or equivalent")}`
-    ]
-  });
+  function getPageOneScopeSections() {
+    const sections = [];
 
-  if (isEnabled(sourceData.exhaustSystemEnabled)) {
-    sections.push({
-      title: "Exhaust Systems",
-      lines: [
-        `${safe(sourceData.exhaustFanQty, "1 No.")} centrifugal blower for exhaust gases and moisture air`,
-        `Blower ${safe(sourceData.exhaustFanHp, "100 HP")}`,
-        `Motor make ${safe(sourceData.exhaustMotorMake, "ABB / Siemens")}`,
-        `Blower construction ${safe(sourceData.blowerMoc, "MS")}`
-      ]
-    });
-  }
-
-  if (isEnabled(sourceData.dustSeparationEnabled)) {
-    sections.push({
-      title: "Dust Separation Systems",
-      lines: [
-        `${safe(sourceData.dustSeparatorQty, "2 Nos.")} cyclone separator will be provided`,
-        `Material of construction ${safe(sourceData.cycloneMoc, "MS")}`,
-        `Thickness ${safe(sourceData.cycloneThickness, "3 mm")}`,
-        `Rotary valve ${safe(sourceData.rotaryValveHp, "2 HP")}`
-      ]
-    });
-  }
-
-  return sections;
-}
-
- function isEnabled(value) {
-  return value === true || value === "true" || value === "Yes" || value === "yes";
-}
-
-function getPageTwoSections() {
-  const dryer = String(sourceData.dryer || "").toLowerCase();
-
-  const sections = [];
-
-  // Always show discharge section
-  if (dryer.includes("rotary")) {
-    sections.push({
-      title: "Discharge",
-      lines: [
-        `Screw conveyor ${safe(sourceData.dischargeConveyorWidth, "600")} mm wide, ${safe(sourceData.dischargeLength, "4500")} mm long`,
-        `Material of construction ${safe(sourceData.dischargeMoc, "MS")}`,
-        `Gear motor ${safe(sourceData.dischargeMotor, "7.5 HP")}`
-      ]
-    });
+    if (isEnabled(sourceData.feedingEnabled)) {
+      sections.push({
+        title: "Feeding",
+        lines: [
+          `Feed conveyor ${safe(sourceData.feedConveyorWidth, "600")} mm wide, ${safe(sourceData.feedLength, "4500")} mm long`,
+          `Material of construction ${safe(sourceData.feedMoc, sourceData.moc || "MS / SS304")}`,
+          `Gear motor ${safe(sourceData.feedMotor, "7.5 HP")}`
+        ]
+      });
+    }
 
     sections.push({
-      title: "Rotary Cooler",
+      title: "Dryer",
       lines: [
-        `Rotary cooler diameter ${safe(sourceData.coolerDiameter, "1500")} mm x ${safe(sourceData.coolerLength, "10500")} mm long`,
-        `Material of construction ${safe(sourceData.coolerMoc, "MS")}`,
-        `Drive arrangement ${safe(sourceData.coolerDrive, "40 HP geared motor")}`,
-        `Gear and motor make ${safe(sourceData.motorMake, "ABB / Siemens or equivalent")}`
-      ]
-    });
-
-    sections.push({
-      title: "Final Discharge",
-      lines: [
-        `Screw conveyor ${safe(sourceData.finalDischargeWidth, "600")} mm wide, ${safe(sourceData.finalDischargeLength, "4500")} mm long`,
-        `Material of construction ${safe(sourceData.finalDischargeMoc, "MS")}`,
-        `Gear motor ${safe(sourceData.finalDischargeMotor, "7.5 HP")}`
-      ]
-    });
-  } else {
-    sections.push({
-      title: "Discharge",
-      lines: [
-        "Suitable discharge arrangement will be provided as per material flow.",
-        `Material of construction ${safe(sourceData.dischargeMoc, sourceData.moc || "As applicable")}`
-      ]
-    });
-
-    sections.push({
-      title: "Air Circulation System",
-      lines: [
-        "Suitable hot air blower / circulation blower will be provided.",
+        `${safe(sourceData.dryer, "Dryer")} suitable for continuous drying application`,
+        `Material of construction ${safe(sourceData.dryerMoc, sourceData.moc || "As per offer")}`,
+        `Drive arrangement with suitable geared motor`,
         `Motor make ${safe(sourceData.motorMake, "ABB / Siemens or equivalent")}`
       ]
     });
-  }
 
-  // Optional Exhaust System
-  if (isEnabled(sourceData.exhaustSystemEnabled)) {
-    if (dryer.includes("rotary")) {
-      sections.push({
-        title: "Exhaust Systems",
-        lines: [
-          `${safe(sourceData.coolingFanQty || sourceData.exhaustFanQty, "1 No.")} ID fan / exhaust fan will be provided`,
-          `Blower ${safe(sourceData.coolingFanHp || sourceData.exhaustFanHp, "40 HP")}`,
-          `Motor make ${safe(sourceData.exhaustMotorMake || sourceData.motorMake, "ABB / Siemens")}`,
-          `Blower construction ${safe(sourceData.blowerMoc, "MS")}`
-        ]
-      });
-    } else {
+    if (isEnabled(sourceData.exhaustSystemEnabled)) {
       sections.push({
         title: "Exhaust Systems",
         lines: [
           `${safe(sourceData.exhaustFanQty, "1 No.")} centrifugal blower for exhaust gases and moisture air`,
-          `Blower ${safe(sourceData.exhaustFanHp, "Suitable HP")}`,
-          `Motor make ${safe(sourceData.exhaustMotorMake || sourceData.motorMake, "ABB / Siemens")}`,
+          `Blower ${safe(sourceData.exhaustFanHp, "100 HP")}`,
+          `Motor make ${safe(sourceData.exhaustMotorMake, "ABB / Siemens")}`,
           `Blower construction ${safe(sourceData.blowerMoc, "MS")}`
         ]
       });
     }
-  }
 
-  // Optional Dust Separation System
-  if (isEnabled(sourceData.dustSeparationEnabled)) {
-    if (dryer.includes("rotary")) {
+    if (isEnabled(sourceData.dustSeparationEnabled)) {
       sections.push({
         title: "Dust Separation Systems",
         lines: [
-          `${safe(sourceData.coolingCycloneQty || sourceData.dustSeparatorQty, "2 Nos.")} cyclone separator will be provided`,
+          `${safe(sourceData.dustSeparatorQty, "2 Nos.")} cyclone separator will be provided`,
           `Material of construction ${safe(sourceData.cycloneMoc, "MS")}`,
           `Thickness ${safe(sourceData.cycloneThickness, "3 mm")}`,
           `Rotary valve ${safe(sourceData.rotaryValveHp, "2 HP")}`
         ]
       });
+    }
+
+    return sections;
+  }
+
+  function isEnabled(value) {
+    return value === true || value === "true" || value === "Yes" || value === "yes";
+  }
+
+  function getPageTwoSections() {
+    const dryer = String(sourceData.dryer || "").toLowerCase();
+
+    const sections = [];
+
+    // Always show discharge section
+    if (dryer.includes("rotary")) {
+      sections.push({
+        title: "Discharge",
+        lines: [
+          `Screw conveyor ${safe(sourceData.dischargeConveyorWidth, "600")} mm wide, ${safe(sourceData.dischargeLength, "4500")} mm long`,
+          `Material of construction ${safe(sourceData.dischargeMoc, "MS")}`,
+          `Gear motor ${safe(sourceData.dischargeMotor, "7.5 HP")}`
+        ]
+      });
+
+      sections.push({
+        title: "Rotary Cooler",
+        lines: [
+          `Rotary cooler diameter ${safe(sourceData.coolerDiameter, "1500")} mm x ${safe(sourceData.coolerLength, "10500")} mm long`,
+          `Material of construction ${safe(sourceData.coolerMoc, "MS")}`,
+          `Drive arrangement ${safe(sourceData.coolerDrive, "40 HP geared motor")}`,
+          `Gear and motor make ${safe(sourceData.motorMake, "ABB / Siemens or equivalent")}`
+        ]
+      });
+
+      sections.push({
+        title: "Final Discharge",
+        lines: [
+          `Screw conveyor ${safe(sourceData.finalDischargeWidth, "600")} mm wide, ${safe(sourceData.finalDischargeLength, "4500")} mm long`,
+          `Material of construction ${safe(sourceData.finalDischargeMoc, "MS")}`,
+          `Gear motor ${safe(sourceData.finalDischargeMotor, "7.5 HP")}`
+        ]
+      });
     } else {
       sections.push({
-        title: "Dust Separation Systems",
+        title: "Discharge",
         lines: [
-          `${safe(sourceData.dustSeparatorQty, "1 No.")} dust collector / cyclone separator will be provided`,
-          `Material of construction ${safe(sourceData.cycloneMoc, "MS / SS as applicable")}`,
-          `Thickness ${safe(sourceData.cycloneThickness, "As per design")}`,
-          `Rotary valve ${safe(sourceData.rotaryValveHp, "As applicable")}`
+          "Suitable discharge arrangement will be provided as per material flow.",
+          `Material of construction ${safe(sourceData.dischargeMoc, sourceData.moc || "As applicable")}`
+        ]
+      });
+
+      sections.push({
+        title: "Air Circulation System",
+        lines: [
+          "Suitable hot air blower / circulation blower will be provided.",
+          `Motor make ${safe(sourceData.motorMake, "ABB / Siemens or equivalent")}`
         ]
       });
     }
-  }
 
-  return sections;
-}
+    // Optional Exhaust System
+    if (isEnabled(sourceData.exhaustSystemEnabled)) {
+      if (dryer.includes("rotary")) {
+        sections.push({
+          title: "Exhaust Systems",
+          lines: [
+            `${safe(sourceData.coolingFanQty || sourceData.exhaustFanQty, "1 No.")} ID fan / exhaust fan will be provided`,
+            `Blower ${safe(sourceData.coolingFanHp || sourceData.exhaustFanHp, "40 HP")}`,
+            `Motor make ${safe(sourceData.exhaustMotorMake || sourceData.motorMake, "ABB / Siemens")}`,
+            `Blower construction ${safe(sourceData.blowerMoc, "MS")}`
+          ]
+        });
+      } else {
+        sections.push({
+          title: "Exhaust Systems",
+          lines: [
+            `${safe(sourceData.exhaustFanQty, "1 No.")} centrifugal blower for exhaust gases and moisture air`,
+            `Blower ${safe(sourceData.exhaustFanHp, "Suitable HP")}`,
+            `Motor make ${safe(sourceData.exhaustMotorMake || sourceData.motorMake, "ABB / Siemens")}`,
+            `Blower construction ${safe(sourceData.blowerMoc, "MS")}`
+          ]
+        });
+      }
+    }
+
+    // Optional Dust Separation System
+    if (isEnabled(sourceData.dustSeparationEnabled)) {
+      if (dryer.includes("rotary")) {
+        sections.push({
+          title: "Dust Separation Systems",
+          lines: [
+            `${safe(sourceData.coolingCycloneQty || sourceData.dustSeparatorQty, "2 Nos.")} cyclone separator will be provided`,
+            `Material of construction ${safe(sourceData.cycloneMoc, "MS")}`,
+            `Thickness ${safe(sourceData.cycloneThickness, "3 mm")}`,
+            `Rotary valve ${safe(sourceData.rotaryValveHp, "2 HP")}`
+          ]
+        });
+      } else {
+        sections.push({
+          title: "Dust Separation Systems",
+          lines: [
+            `${safe(sourceData.dustSeparatorQty, "1 No.")} dust collector / cyclone separator will be provided`,
+            `Material of construction ${safe(sourceData.cycloneMoc, "MS / SS as applicable")}`,
+            `Thickness ${safe(sourceData.cycloneThickness, "As per design")}`,
+            `Rotary valve ${safe(sourceData.rotaryValveHp, "As applicable")}`
+          ]
+        });
+      }
+    }
+
+    return sections;
+  }
 
   function writeUtilities(startY) {
     let y = startY;
@@ -876,10 +967,10 @@ function getPageTwoSections() {
       [
         `CIF ${safe(sourceData.cifLocation, sourceData.country || "DESTINATION")} IN ${currency}`,
         sourceData.cifTotal ||
-          toNumber(getAmountValue()) +
-            toNumber(sourceData.freight) +
-            toNumber(sourceData.insurance) +
-            toNumber(sourceData.installationCharges)
+        toNumber(getAmountValue()) +
+        toNumber(sourceData.freight) +
+        toNumber(sourceData.insurance) +
+        toNumber(sourceData.installationCharges)
       ]
     ];
 
@@ -922,9 +1013,12 @@ function getPageTwoSections() {
 
   y = doc.y + 5;
 
-  const machineImagePath = sourceData.machineImagePath || defaultDryerImagePath;
+  const machineImagePath =
+    sourceData.machineImagePath && imageExists(sourceData.machineImagePath)
+      ? sourceData.machineImagePath
+      : getDryerImagePath(sourceData.dryer);
 
-  if (imageExists(machineImagePath)) {
+  if (machineImagePath && imageExists(machineImagePath)) {
     doc.image(machineImagePath, left + 18, y, {
       width: 240,
       height: 115,

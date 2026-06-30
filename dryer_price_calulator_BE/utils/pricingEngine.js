@@ -119,12 +119,30 @@ function removeInvalidDryers(scores, data, reasons) {
     materialText.includes("liquid") ||
     materialText.includes("slurry") ||
     applicationText.includes("dairy") ||
-    applicationText.includes("ceramics") ||
     applicationText.includes("coating");
 
   if (isLiquidInput) {
     delete scores["Combination Dryer"];
     reasons.push("Combination Dryer removed because input material is liquid/slurry.");
+  }
+
+  const isStickyOrPaste =
+    materialText.includes("sludge") ||
+    materialText.includes("paste") ||
+    materialText.includes("cake");
+
+  if (isStickyOrPaste) {
+    delete scores["Vibrating Fluid Bed Dryer"];
+  }
+
+  const isSolidOnly =
+    materialText.includes("granule") ||
+    materialText.includes("powder") ||
+    materialText.includes("piece") ||
+    materialText.includes("flake");
+
+  if (!isSolidOnly && applicationText.includes("grain")) {
+    delete scores["Grain Dryer"];
   }
 }
 
@@ -319,6 +337,29 @@ function calculateDryingTime({
   const dryingTimeMinutes = (materialHoldUp / feed) * 60;
 
   return Math.round(dryingTimeMinutes);
+}
+
+function getBaseConnectedHP(dryer, waterEvaporation) {
+  const evaporationKgHr = toNumber(waterEvaporation);
+
+  const baseRules = {
+    "Band Dryer / Roaster / Cooler": 18 + evaporationKgHr * 0.015,
+    "Mesh Belt Dryer": 18 + evaporationKgHr * 0.015,
+    "Combination Dryer": 22 + evaporationKgHr * 0.018,
+    "Paddle Dryer": 25 + evaporationKgHr * 0.02,
+    "Rotary Dryer": 35 + evaporationKgHr * 0.035,
+    "Vibrating Fluid Bed Dryer": 20 + evaporationKgHr * 0.025,
+    "Flash Dryer": 30 + evaporationKgHr * 0.03,
+    "Tray Dryer": 8 + evaporationKgHr * 0.005,
+    "Freeze Dryer": 25 + evaporationKgHr * 0.015,
+    "Double Drum Dryer": 18 + evaporationKgHr * 0.012,
+    "Single Drum Flaker / Dryer": 18 + evaporationKgHr * 0.012,
+    "Tunnel Oven": 15 + evaporationKgHr * 0.01,
+    "DDGS Dryer": 40 + evaporationKgHr * 0.035,
+    "Grain Dryer": 18 + evaporationKgHr * 0.015
+  };
+
+  return baseRules[dryer] || 15 + evaporationKgHr * 0.015;
 }
 
 module.exports = {
