@@ -4,13 +4,98 @@ export default function Recommendation({ data }) {
     const [currency, setCurrency] = useState("USD");
     const [selectedDryer, setSelectedDryer] = useState("");
 
+    // Hidden admin price override states
+    const [adminMode, setAdminMode] = useState(false);
+    const [showPinBox, setShowPinBox] = useState(false);
+    const [pin, setPin] = useState("");
+
+    // Keep editable price internally in USD/base value.
+    // If INR is selected, the screen converts it for display only.
+    const [editableMinPrice, setEditableMinPrice] = useState(Number(data?.minPrice || 0));
+    const [editableMaxPrice, setEditableMaxPrice] = useState(Number(data?.maxPrice || 0));
+
     const USD_TO_INR = 94.15;
+    const ADMIN_PIN = "9088";
 
     useEffect(() => {
         if (data?.dryer) {
             setSelectedDryer(data.dryer);
         }
+
+        setEditableMinPrice(Number(data?.minPrice || 0));
+        setEditableMaxPrice(Number(data?.maxPrice || 0));
+        setAdminMode(false);
+        setShowPinBox(false);
+        setPin("");
     }, [data]);
+
+    // Secret shortcut: Ctrl + Shift + P
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "p") {
+                event.preventDefault();
+                setShowPinBox(true);
+            }
+
+            if (event.key === "Escape") {
+                setShowPinBox(false);
+                setPin("");
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
+    const verifyAdminPin = () => {
+        if (pin === ADMIN_PIN) {
+            setAdminMode(true);
+            setShowPinBox(false);
+            setPin("");
+        } else {
+            alert("Invalid PIN");
+        }
+    };
+
+    const isPriceOverridden = useMemo(() => {
+        return (
+            Number(editableMinPrice || 0) !== Number(data?.minPrice || 0) ||
+            Number(editableMaxPrice || 0) !== Number(data?.maxPrice || 0)
+        );
+    }, [editableMinPrice, editableMaxPrice, data]);
+
+    const formatPriceValue = (usdValue) => {
+        const value = Number(usdValue || 0);
+
+        if (currency === "INR") {
+            return `₹${Math.round(value * USD_TO_INR).toLocaleString("en-IN")}`;
+        }
+
+        return `$${Math.round(value).toLocaleString("en-US")}`;
+    };
+
+    const getDisplayInputValue = (usdValue) => {
+        const value = Number(usdValue || 0);
+
+        if (currency === "INR") {
+            return Math.round(value * USD_TO_INR);
+        }
+
+        return Math.round(value);
+    };
+
+    const convertDisplayInputToUSD = (displayValue) => {
+        const value = Number(displayValue || 0);
+
+        if (currency === "INR") {
+            return value / USD_TO_INR;
+        }
+
+        return value;
+    };
 
     const dryerInfo = {
         "Band Dryer / Roaster / Cooler": {
@@ -84,6 +169,25 @@ export default function Recommendation({ data }) {
         }
     };
 
+    // Optional frontend dryer preview images.
+    // Put images in: frontend/public/dryers/
+    // const dryerImageMap = {
+    //     "Band Dryer / Roaster / Cooler": "/dryers/band-dryer.jpg",
+    //     "Mesh Belt Dryer": "/dryers/mesh-belt-dryer.jpg",
+    //     "Tunnel Oven": "/dryers/tunnel-oven.jpg",
+    //     "Flash Dryer": "/dryers/flash-dryer.jpg",
+    //     "Freeze Dryer": "/dryers/freeze-dryer.jpg",
+    //     "Paddle Dryer": "/dryers/paddle-dryer.jpg",
+    //     "Double Drum Dryer": "/dryers/double-drum-dryer.jpg",
+    //     "Single Drum Flaker / Dryer": "/dryers/single-drum-flaker-dryer.jpg",
+    //     "Rotary Dryer": "/dryers/rotary-dryer.jpg",
+    //     "Vibrating Fluid Bed Dryer": "/dryers/vibrating-fluid-bed-dryer.jpg",
+    //     "Tray Dryer": "/dryers/tray-dryer.jpg",
+    //     "DDGS Dryer": "/dryers/ddgs-dryer.jpg",
+    //     "Grain Dryer": "/dryers/grain-dryer.jpg",
+    //     "Combination Dryer": "/dryers/combination-dryer.jpg"
+    // };
+
     const dryerOptions = useMemo(() => {
         const options = [];
 
@@ -111,32 +215,26 @@ export default function Recommendation({ data }) {
         );
     }
 
-    const minPrice = Number(data.minPrice || 0);
-    const maxPrice = Number(data.maxPrice || 0);
-
-    const formatUSD = (value) => {
-        return `$${Number(value || 0).toLocaleString("en-US")}`;
-    };
-
-    const formatINR = (value) => {
-        return `₹${Math.round(Number(value || 0) * USD_TO_INR).toLocaleString("en-IN")}`;
-    };
-
-    const priceDisplay =
-        currency === "USD"
-            ? `${formatUSD(minPrice)} - ${formatUSD(maxPrice)}`
-            : `${formatINR(minPrice)} - ${formatINR(maxPrice)}`;
-
     const selectedInfo = dryerInfo[selectedDryer] || {
         desc: "Recommended based on application, material type, evaporation load, temperature, and heating media.",
         tags: ["Custom", "Calculated", "Suggested"]
     };
 
+    //const dryerImage = dryerImageMap[selectedDryer] || "/dryers/default-dryer.jpg";
+
     const handleDownload = async () => {
         try {
             const pdfData = {
                 ...data,
-                dryer: selectedDryer
+                dryer: selectedDryer,
+
+                // Edited price will go to PDF
+                minPrice: Number(editableMinPrice || 0),
+                maxPrice: Number(editableMaxPrice || 0),
+                priceOverridden: isPriceOverridden,
+
+                // Useful for PDF/debug/history
+                selectedCurrency: currency
             };
 
             const res = await fetch("https://gem-drytech-offer-generator.onrender.com/api/offer/pdf", {
@@ -171,6 +269,13 @@ export default function Recommendation({ data }) {
         const savedQuote = {
             ...data,
             dryer: selectedDryer,
+
+            // Edited price saved to local history
+            minPrice: Number(editableMinPrice || 0),
+            maxPrice: Number(editableMaxPrice || 0),
+            priceOverridden: isPriceOverridden,
+            selectedCurrency: currency,
+
             savedAt: new Date().toISOString()
         };
 
@@ -188,9 +293,82 @@ export default function Recommendation({ data }) {
 
             <h2 className="title">{selectedDryer}</h2>
 
-            <div className="price-pill">
-                {priceDisplay}
+            {/* <img
+                src={dryerImage}
+                alt={selectedDryer}
+                className="dryer-preview-img"
+                onError={(event) => {
+                    event.currentTarget.src = "/dryers/default-dryer.jpg";
+                }}
+            /> */}
+
+            <div className="price-box">
+                <div className="price-label">Estimated Price Range</div>
+
+                {!adminMode ? (
+                    <div className="price-value">
+                        {formatPriceValue(editableMinPrice)}
+                        {" - "}
+                        {formatPriceValue(editableMaxPrice)}
+                    </div>
+                ) : (
+                    <div className="admin-price-edit">
+                        <span className="admin-currency-label">{currency}</span>
+
+                        <input
+                            type="number"
+                            value={getDisplayInputValue(editableMinPrice)}
+                            onChange={(e) =>
+                                setEditableMinPrice(convertDisplayInputToUSD(e.target.value))
+                            }
+                        />
+
+                        <span>to</span>
+
+                        <input
+                            type="number"
+                            value={getDisplayInputValue(editableMaxPrice)}
+                            onChange={(e) =>
+                                setEditableMaxPrice(convertDisplayInputToUSD(e.target.value))
+                            }
+                        />
+
+                        <button onClick={() => setAdminMode(false)}>
+                            Lock
+                        </button>
+                    </div>
+                )}
             </div>
+
+            {showPinBox && (
+                <div className="admin-pin-box">
+                    <input
+                        type="password"
+                        placeholder="Admin PIN"
+                        value={pin}
+                        autoFocus
+                        onChange={(e) => setPin(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                verifyAdminPin();
+                            }
+                        }}
+                    />
+
+                    <button onClick={verifyAdminPin}>
+                        Unlock
+                    </button>
+
+                    <button
+                        onClick={() => {
+                            setShowPinBox(false);
+                            setPin("");
+                        }}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            )}
 
             <div className="currency">
                 <span
@@ -230,6 +408,81 @@ export default function Recommendation({ data }) {
                     <b>{Number(data.waterEvaporation || data.evaporation || 0).toLocaleString("en-IN")} kg/hr</b>
                 </div>
             </div>
+
+            {(data.dryingArea || data.dryingTime || data.materialHoldUp || data.evaporationLoad) && (
+                <div className="info-box">
+                    <strong>Drying Calculation</strong>
+
+                    {data.dryingArea && (
+                        <div className="info-row">
+                            <span>Drying Area</span>
+                            <b>{Number(data.dryingArea || 0).toLocaleString("en-IN")} m²</b>
+                        </div>
+                    )}
+
+                    {data.dryingTime && (
+                        <div className="info-row">
+                            <span>Drying Time</span>
+                            <b>{Number(data.dryingTime || 0).toLocaleString("en-IN")} min</b>
+                        </div>
+                    )}
+
+                    {data.materialHoldUp && (
+                        <div className="info-row">
+                            <span>Material Hold-up</span>
+                            <b>{Number(data.materialHoldUp || 0).toLocaleString("en-IN")} kg</b>
+                        </div>
+                    )}
+
+                    {data.evaporationLoad && (
+                        <div className="info-row">
+                            <span>Evaporation Load</span>
+                            <b>{Number(data.evaporationLoad || 0).toLocaleString("en-IN")} kg/m²/hr</b>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {(data.heatDutyKcalHr || data.airFlowCMH || data.fuelConsumption || data.connectedLoad || data.consumedLoad) && (
+                <div className="info-box">
+                    <strong>Utilities</strong>
+
+                    {data.heatDutyKcalHr && (
+                        <div className="info-row">
+                            <span>Heat Duty</span>
+                            <b>{Number(data.heatDutyKcalHr || 0).toLocaleString("en-IN")} kcal/hr</b>
+                        </div>
+                    )}
+
+                    {data.airFlowCMH && (
+                        <div className="info-row">
+                            <span>Air Flow Required</span>
+                            <b>{Number(data.airFlowCMH || 0).toLocaleString("en-IN")} CMH</b>
+                        </div>
+                    )}
+
+                    {data.fuelConsumption && (
+                        <div className="info-row">
+                            <span>Fuel Consumption</span>
+                            <b>{data.fuelConsumption}</b>
+                        </div>
+                    )}
+
+                    {data.connectedLoad && (
+                        <div className="info-row">
+                            <span>Connected Power</span>
+                            <b>{data.connectedLoad} HP</b>
+                        </div>
+                    )}
+
+                    {data.consumedLoad && (
+                        <div className="info-row">
+                            <span>Consumed Power</span>
+                            <b>{data.consumedLoad} HP</b>
+                        </div>
+                    )}
+                </div>
+            )}
 
             <hr />
 

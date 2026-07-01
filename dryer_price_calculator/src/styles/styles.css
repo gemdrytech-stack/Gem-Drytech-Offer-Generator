@@ -270,6 +270,80 @@ select {
     margin-bottom: 10px;
 }
 
+/* Add these styles in App.css */
+
+.dryer-preview-img {
+  width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  margin: 12px 0;
+  background: #ffffff;
+}
+
+.admin-pin-box {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #d4d4d8;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.admin-pin-box input {
+  width: 120px;
+  padding: 7px 9px;
+  border: 1px solid #d4d4d8;
+  border-radius: 7px;
+}
+
+.admin-pin-box button {
+  padding: 7px 10px;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.admin-price-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-price-edit input {
+  width: 135px;
+  padding: 8px 10px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.admin-price-edit button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: #111827;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.admin-currency-label {
+  font-size: 12px;
+  font-weight: 700;
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 4px 8px;
+}
+
+
 .currency {
     display: flex;
     gap: 10px;
