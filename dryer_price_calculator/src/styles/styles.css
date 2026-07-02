@@ -511,9 +511,7 @@ th {
         flex-direction: column;
     }
 
-    .card {
-        width: 100%;
-    }
+   
 
     .hero h1 {
         font-size: 36px;
@@ -527,7 +525,7 @@ th {
     .header {
         padding: 12px 16px;
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         gap: 10px;
     }
 
@@ -544,6 +542,7 @@ th {
     /* HERO */
     .hero {
         padding: 90px 16px 40px;
+        margin-top: 22% ;
     }
 
     .hero h1 {
@@ -567,6 +566,7 @@ th {
 
     /* FORM GRID */
     .row {
+        display: flex;
         flex-direction: column;
     }
 
